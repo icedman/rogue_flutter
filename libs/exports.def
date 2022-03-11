@@ -2,3 +2,5 @@ LIBRARY api
 EXPORTS
     add
     capitalize
+    initApp
+    getScreenBuffer

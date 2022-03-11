@@ -19,12 +19,22 @@ class FFIBridge {
         NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>('capitalize');
     _capitalize = _cap.asFunction<Pointer<Utf8> Function(Pointer<Utf8>)>();
 
+    final _initApp = nativeApiLib
+        .lookup<NativeFunction<Void Function()>>('initApp');
+    initApp = _initApp.asFunction<void Function()>();
+
+    final _getSB = nativeApiLib.lookup<
+        NativeFunction<Pointer<Utf8> Function()>>('getScreenBuffer');
+    getScreenBuffer = _getSB.asFunction<Pointer<Utf8> Function()>();
+
     return true;
   }
 
   static late DynamicLibrary nativeApiLib;
   static late Function add;
   static late Function _capitalize;
+  static late Function initApp;
+  static late Function getScreenBuffer;
 
   static String capitalize(String str) {
     final _str = str.toNativeUtf8();
@@ -32,10 +42,16 @@ class FFIBridge {
     calloc.free(_str);
     return res.toDartString();
   }
+
+  // static String getScreenBuffer() {
+  //   Pointer<Utf8> res = _getScreenBuffer();
+  //   return res.toDartString();
+  // }
 }
 
 void main() {
   FFIBridge.initialize();
+  FFIBridge.initApp();
   runApp(const MyApp());
 }
 
@@ -86,6 +102,11 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
+    Pointer<Utf8> buff = FFIBridge.getScreenBuffer();
+    print(buff.length);
+    // for(int i=0;i<buff.length; i++) {
+    //   printf('${buff[i]}');
+    // }
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
