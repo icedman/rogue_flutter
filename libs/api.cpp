@@ -52,16 +52,16 @@ void* run_thread(void* arg)
 EXPORT
 void initApp()
 {
-    setUpdateConsumers(4);
+    // setUpdateConsumers(4);
     pthread_create(&threadId, NULL, &run_thread, (void*)"");
 }
 
 EXPORT
 char* getScreenBuffer()
 {
-    pushKey(' ');
-    printf(">>%d\n", isScreenDirty());
-    char* res = getScreenData();
+    // pushKey(' ');
+    // printf(">>%d\n", isScreenDirty());
+    // char* res = getScreenData();
     // for(int y=0; y<40; y++) {
     //     for(int x=0; x<80; x++) {
     //         char c = res[y*80+x];
@@ -70,5 +70,5 @@ char* getScreenBuffer()
     //     printf("\n");
     // }
     strcpy(buffer, "");
-    return res;
+    return buffer;
 }

@@ -3,11 +3,9 @@ project(api LANGUAGES CXX C)
 
 set (CMAKE_CXX_STANDARD 11)
 add_definitions(-fPIC)
-add_definitions(-DHAVE_CONFIG_H=1)
-add_definitions(-DPDCURSES=1)
 
-add_library(rogue
-  SHARED
+add_library(pdcurses
+  STATIC
   ./PDCurses-3.4/pdcurses/addch.c
   ./PDCurses-3.4/pdcurses/addchstr.c
   ./PDCurses-3.4/pdcurses/addstr.c
@@ -51,6 +49,16 @@ add_library(rogue
   ./PDCurses-3.4/pdcurses/util.c
   ./PDCurses-3.4/pdcurses/window.c
   ./PDCurses-3.4/impl/pdc_impl.c
+)
+
+target_include_directories(pdcurses 
+    PRIVATE
+    ./PDCurses-3.4/impl
+    ./PDCurses-3.4/
+)
+
+add_library(rogue
+  STATIC
   ./rogue-5.4/armor.c
   ./rogue-5.4/chase.c
   ./rogue-5.4/command.c
@@ -101,6 +109,7 @@ target_include_directories(rogue
     ./rogue-5.4/
 )
 
+target_link_libraries(rogue PRIVATE pdcurses)
 
 add_library(api
   SHARED
@@ -110,9 +119,9 @@ add_library(api
 
 target_include_directories(api 
     PRIVATE
-    ./PDCurses-3.4/
     ./PDCurses-3.4/impl
+    ./PDCurses-3.4/
     ./rogue-5.4/
 )
 
-target_link_libraries(api PRIVATE rogue)
+target_link_libraries(api PRIVATE rogue pdcurses)

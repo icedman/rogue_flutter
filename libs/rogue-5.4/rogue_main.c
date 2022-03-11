@@ -20,7 +20,7 @@
 #include <curses.h>
 #include "rogue.h"
 
-int rogue_running;
+int rogue_running = 0;
 
 int is_rogue_running()
 {
@@ -42,7 +42,6 @@ int what_thing(int y, int x) {
 int
 rogue_main(int argc, char **argv)
 {
-    printf("!!!\n");
     rogue_running = TRUE;
     
     char *env;
