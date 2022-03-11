@@ -199,14 +199,12 @@ char *tigetstr(const char *capname)
     return (char *)(-1);
 }
 
+// char *tparm(const char *cap, ...)
+// {
+//     PDC_LOG(("tparm() - called: cap %s\n", cap));
 
-char *tparm(const char *, long, long, long, long, long, 
-              long, long, long, long)
-{
-    PDC_LOG(("tparm() - called: cap %s\n", cap));
-
-    return (char *)NULL;
-}
+//     return (char *)NULL;
+// }
 
 int tputs(const char *str, int affcnt, int (*putfunc)(int))
 {

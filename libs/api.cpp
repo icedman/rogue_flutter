@@ -6,7 +6,7 @@
 
 #include <cstring>
 #include <ctype.h>
-#include <curses.h>
+#include "curses.h"
 #include <rogue.h>
 #include <pthread.h>
 
@@ -52,16 +52,21 @@ void* run_thread(void* arg)
 EXPORT
 void initApp()
 {
-    // setUpdateConsumers(4);
+    setUpdateConsumers(4);
     pthread_create(&threadId, NULL, &run_thread, (void*)"");
+    // WINDOW* w = initscr();
+    // waddch(w, 'x');
+    // waddch(w, 'y');
+    // waddch(w, 'z');
+    // wrefresh(w);
 }
 
 EXPORT
 char* getScreenBuffer()
 {
-    // pushKey(' ');
+    pushKey(' ');
     // printf(">>%d\n", isScreenDirty());
-    // char* res = getScreenData();
+    char* res = getScreenData();
     // for(int y=0; y<40; y++) {
     //     for(int x=0; x<80; x++) {
     //         char c = res[y*80+x];
@@ -69,6 +74,6 @@ char* getScreenBuffer()
     //     }
     //     printf("\n");
     // }
-    strcpy(buffer, "");
-    return buffer;
+    // strcpy(buffer, "");
+    return res;
 }

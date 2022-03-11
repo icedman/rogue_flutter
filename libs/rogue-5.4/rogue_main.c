@@ -20,7 +20,7 @@
 #include <curses.h>
 #include "rogue.h"
 
-int rogue_running = 0;
+int rogue_running;
 
 int is_rogue_running()
 {
@@ -46,6 +46,7 @@ rogue_main(int argc, char **argv)
     
     char *env;
     time_t lowtime;
+
 
     md_init();
 
@@ -100,13 +101,14 @@ rogue_main(int argc, char **argv)
      * Drop setuid/setgid after opening the scoreboard file. 
      */ 
 
-    md_normaluser();
+    // md_normaluser();
 
     /*
      * check for print-score option
      */
 
-	md_normaluser(); /* we drop any setgid/setuid priveldges here */
+	// md_normaluser(); /* we drop any setgid/setuid priveldges here */
+
 
     if (argc == 2)
     {

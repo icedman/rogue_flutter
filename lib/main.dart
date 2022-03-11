@@ -104,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     Pointer<Utf8> buff = FFIBridge.getScreenBuffer();
     print(buff.length);
+    print('${buff.toDartString()}');
     // for(int i=0;i<buff.length; i++) {
     //   printf('${buff[i]}');
     // }

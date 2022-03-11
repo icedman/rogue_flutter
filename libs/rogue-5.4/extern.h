@@ -10,6 +10,7 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+
 #ifdef HAVE_CONFIG_H
 #ifdef PDCURSES
 #undef HAVE_UNISTD_H
