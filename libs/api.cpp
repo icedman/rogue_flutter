@@ -10,8 +10,6 @@
 #include <rogue.h>
 #include <pthread.h>
 
-// #include <dlfcn.h>
-
 static char buffer[3200];
 
 extern "C" {
@@ -54,15 +52,7 @@ void* run_thread(void* arg)
 EXPORT
 void initApp()
 {
-    // void* dl_handle = dlopen("libpdcurses.so", RTLD_LAZY | RTLD_DEEPBIND);
-    //   if (!dl_handle) {
-    //     printf( "!!! %s\n", dlerror() );
-    //     return;
-    //   } else {
-    //     printf("loaded!\n");
-    //   }
-    // void (*func)(float);
-
+    printf("new game\n");
     setUpdateConsumers(4);
     pthread_create(&threadId, NULL, &run_thread, (void*)"");
 }
@@ -76,5 +66,10 @@ char* getScreenBuffer()
 EXPORT
 void pushString(char *key)
 {
+    if (!is_rogue_running()) {
+        initApp();
+        return;
+    }
+    printf("%c\n", key[0]);
     pushKey(key[0]);
 }

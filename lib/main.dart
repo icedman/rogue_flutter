@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ffi/ffi.dart';
 
 import 'input.dart';
@@ -65,6 +66,7 @@ class FFIBridge {
 void main() {
   FFIBridge.initialize();
   FFIBridge.initApp();
+  FFIBridge.pushKey(' ');
   runApp(const MyApp());
 }
 
@@ -131,7 +133,19 @@ class _GameViewState extends State<GameView> {
           bool shift = false,
           bool control = false,
           bool softKeyboard = false}) {
+
+        int k = keyId;
+          if (!shift && (k >= LogicalKeyboardKey.keyA.keyId &&
+                  k <= LogicalKeyboardKey.keyZ.keyId) ||
+              (k + 32 >= LogicalKeyboardKey.keyA.keyId &&
+                  k + 32 <= LogicalKeyboardKey.keyZ.keyId)) {
+            String ch =
+                String.fromCharCode(97 + k - LogicalKeyboardKey.keyA.keyId);
+            key = ch;
+          }
+
         String s = key;
+
         switch (key) {
           case 'Arrow Up':
             s = 'k';
@@ -155,7 +169,10 @@ class _GameViewState extends State<GameView> {
             print(key);
             break;
         }
-        FFIBridge.pushKey(s);
+
+        if (s.length == 1) {
+          FFIBridge.pushKey(s);
+        }
         Future.delayed(const Duration(milliseconds: 10), _updateScreen);
       },
     ));

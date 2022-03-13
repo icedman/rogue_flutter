@@ -43,7 +43,7 @@ int
 rogue_main(int argc, char **argv)
 {
     rogue_running = TRUE;
-    
+
     char *env;
     time_t lowtime;
 
@@ -186,6 +186,8 @@ rogue_main(int argc, char **argv)
     //msg("Explore the deep dungeons");
     
     playit();
+
+    rogue_running = FALSE;
     
     return(0);
 }
