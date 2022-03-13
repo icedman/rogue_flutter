@@ -6,11 +6,13 @@
 
 #include <cstring>
 #include <ctype.h>
-#include "curses.h"
+#include <curses.h>
 #include <rogue.h>
 #include <pthread.h>
 
-static char buffer[1024];
+// #include <dlfcn.h>
+
+static char buffer[3200];
 
 extern "C" {
 char *getScreenData();
@@ -52,28 +54,27 @@ void* run_thread(void* arg)
 EXPORT
 void initApp()
 {
+    // void* dl_handle = dlopen("libpdcurses.so", RTLD_LAZY | RTLD_DEEPBIND);
+    //   if (!dl_handle) {
+    //     printf( "!!! %s\n", dlerror() );
+    //     return;
+    //   } else {
+    //     printf("loaded!\n");
+    //   }
+    // void (*func)(float);
+
     setUpdateConsumers(4);
     pthread_create(&threadId, NULL, &run_thread, (void*)"");
-    // WINDOW* w = initscr();
-    // waddch(w, 'x');
-    // waddch(w, 'y');
-    // waddch(w, 'z');
-    // wrefresh(w);
 }
 
 EXPORT
 char* getScreenBuffer()
 {
-    pushKey(' ');
-    // printf(">>%d\n", isScreenDirty());
-    char* res = getScreenData();
-    // for(int y=0; y<40; y++) {
-    //     for(int x=0; x<80; x++) {
-    //         char c = res[y*80+x];
-    //         printf("%c", c);
-    //     }
-    //     printf("\n");
-    // }
-    // strcpy(buffer, "");
-    return res;
+    return getScreenData();
+}
+
+EXPORT
+void pushString(char *key)
+{
+    pushKey(key[0]);
 }

@@ -226,7 +226,7 @@ WINDOW *Xinitscr(int argc, char *argv[])
 WINDOW *initscr(void)
 {
     PDC_LOG(("initscr() - called\n"));
-
+    printf("PDCurses initscr\n");
     return Xinitscr(0, NULL);
 }
 

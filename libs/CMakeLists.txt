@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 project(api LANGUAGES CXX C)
 
 set (CMAKE_CXX_STANDARD 11)
-add_definitions(-fPIC)
 
 add_library(pdcurses
   STATIC
@@ -57,6 +56,7 @@ target_include_directories(pdcurses
     ./PDCurses-3.4/
 )
 
+add_definitions(-fPIC)
 add_library(rogue
   STATIC
   ./rogue-5.4/armor.c
@@ -104,12 +104,11 @@ add_library(rogue
 
 target_include_directories(rogue 
     PRIVATE
-    ./PDCurses-3.4/impl
     ./PDCurses-3.4/
     ./rogue-5.4/
 )
 
-target_link_libraries(rogue PRIVATE pdcurses)
+#target_link_libraries(rogue INTERFACE pdcurses)
 
 add_library(api
   SHARED
@@ -119,7 +118,6 @@ add_library(api
 
 target_include_directories(api 
     PRIVATE
-    ./PDCurses-3.4/impl
     ./PDCurses-3.4/
     ./rogue-5.4/
 )
