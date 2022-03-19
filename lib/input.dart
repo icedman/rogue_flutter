@@ -14,6 +14,14 @@ class CustomEditingController extends TextEditingController {
   }
 }
 
+class InputTool {
+  InputTool({IconData? this.icon, String this.title = '', String this.cmd = ''});
+
+  IconData? icon;
+  String title = '';
+  String cmd = '';
+}
+
 class InputListener extends StatefulWidget {
   late Widget child;
   Function? onKeyDown;
@@ -22,13 +30,18 @@ class InputListener extends StatefulWidget {
   Function? onDoubleTapDown;
   Function? onPanUpdate;
 
+  bool showToolbar = false;
+  List<InputTool> toolbar = [];
+
   InputListener(
       {required Widget this.child,
       Function? this.onKeyDown,
       Function? this.onKeyUp,
       Function? this.onTapDown,
       Function? this.onDoubleTapDown,
-      Function? this.onPanUpdate});
+      Function? this.onPanUpdate,
+      bool this.showToolbar = false,
+      List<InputTool> this.toolbar = const []});
   @override
   _InputListener createState() => _InputListener();
 }
@@ -38,7 +51,7 @@ class _InputListener extends State<InputListener> {
   late FocusNode textFocusNode;
   late TextEditingController controller;
 
-  bool showKeyboard = true;
+  bool showKeyboard = false;
   Offset lastTap = const Offset(0, 0);
 
   @override
@@ -68,6 +81,7 @@ class _InputListener extends State<InputListener> {
 
   @override
   Widget build(BuildContext context) {
+    double iconSize = 28.0;
     return Focus(
         onFocusChange: (focused) {
           // if (focused && !textFocusNode.hasFocus) {
@@ -110,11 +124,11 @@ class _InputListener extends State<InputListener> {
           // maxLines: null,
           // enableInteractiveSelection: false,)
 
-          if (Platform.isAndroid) ...[
+          if (Platform.isAndroid || widget.showToolbar) ...[
             Container(
                 child: Row(children: [
               IconButton(
-                  icon: Icon(Icons.keyboard, color: Colors.white),
+                  icon: Icon(Icons.keyboard, color: Colors.white, size: iconSize),
                   onPressed: () {
                     setState(() {
                       showKeyboard = !showKeyboard;
@@ -125,6 +139,13 @@ class _InputListener extends State<InputListener> {
                       }
                     });
                   }),
+            
+            ... (widget.toolbar.map((t) => IconButton(icon: Icon(t.icon, color: Colors.white, size: iconSize),
+            onPressed: () {
+              widget.onKeyDown?.call(t.cmd);
+            },)))
+            
+            
             ]))
           ], // toolbar
 

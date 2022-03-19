@@ -20,7 +20,8 @@ void pushKey(int k);
 int rogue_main(int argc, char **argv);
 int is_rogue_running();
 }
-pthread_t threadId;
+
+pthread_t threadId = 0;
 
 EXPORT
 int add(int a, int b)
@@ -52,6 +53,11 @@ void* run_thread(void* arg)
 EXPORT
 void initApp()
 {
+    if (threadId != 0) {
+        // pthread_cancel(threadId);
+        return;
+    }
+
     printf("new game\n");
     setUpdateConsumers(4);
     pthread_create(&threadId, NULL, &run_thread, (void*)"");
