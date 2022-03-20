@@ -15,11 +15,16 @@ class CustomEditingController extends TextEditingController {
 }
 
 class InputTool {
-  InputTool({IconData? this.icon, String this.title = '', String this.cmd = ''});
+  InputTool(
+      {IconData? this.icon,
+      String this.title = '',
+      String this.cmd = '',
+      Function? this.onPressed});
 
   IconData? icon;
   String title = '';
   String cmd = '';
+  Function? onPressed;
 }
 
 class InputListener extends StatefulWidget {
@@ -50,6 +55,7 @@ class _InputListener extends State<InputListener> {
   late FocusNode focusNode;
   late FocusNode textFocusNode;
   late TextEditingController controller;
+  late ScrollController hscroller;
 
   bool showKeyboard = false;
   Offset lastTap = const Offset(0, 0);
@@ -69,6 +75,8 @@ class _InputListener extends State<InputListener> {
       }
       controller.text = '';
     });
+
+    hscroller = ScrollController();
   }
 
   @override
@@ -77,6 +85,7 @@ class _InputListener extends State<InputListener> {
     focusNode.dispose();
     textFocusNode.dispose();
     controller.dispose();
+    hscroller.dispose();
   }
 
   @override
@@ -120,15 +129,14 @@ class _InputListener extends State<InputListener> {
                         context.findRenderObject(), details.globalPosition);
                   })),
 
-          // TextField(focusNode: textFocusNode, controller: controller, autofocus: true,
-          // maxLines: null,
-          // enableInteractiveSelection: false,)
-
           if (Platform.isAndroid || widget.showToolbar) ...[
-            Container(
+            SingleChildScrollView(
+          controller: hscroller,
+          scrollDirection: Axis.horizontal,
                 child: Row(children: [
               IconButton(
-                  icon: Icon(Icons.keyboard, color: Colors.white, size: iconSize),
+                  icon:
+                      Icon(Icons.keyboard, color: Colors.white, size: iconSize),
                   onPressed: () {
                     setState(() {
                       showKeyboard = !showKeyboard;
@@ -139,13 +147,15 @@ class _InputListener extends State<InputListener> {
                       }
                     });
                   }),
-            
-            ... (widget.toolbar.map((t) => IconButton(icon: Icon(t.icon, color: Colors.white, size: iconSize),
-            onPressed: () {
-              widget.onKeyDown?.call(t.cmd);
-            },)))
-            
-            
+              ...(widget.toolbar.map((t) => IconButton(
+                    icon: Icon(t.icon, color: Colors.white, size: iconSize),
+                    onPressed: () {
+                      if (t.cmd.length > 0) {
+                        widget.onKeyDown?.call(t.cmd);
+                      }
+                      t.onPressed?.call();
+                    },
+                  )))
             ]))
           ], // toolbar
 

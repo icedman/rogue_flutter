@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'sprites.dart';
+import 'ffibridge.dart';
 
 class Cell {
   String data = '';
@@ -13,6 +14,7 @@ class BoardData extends ChangeNotifier {
   String buffer = '';
   String message = '';
   bool hasMore = false;
+  bool hasRip = false;
   Map<String, String> stats = {};
   List<Cell> cells = [];
 
@@ -34,6 +36,52 @@ class BoardData extends ChangeNotifier {
     if (x < 0 || x >= 80) return '?';
     if (y < 0 || y >= 25) return '?';
     return buffer[(y * 80) + x];
+  }
+
+  void modifyWeaponTiles() {
+    // int MACE = 0;
+    // int SWORD = 1;
+    // int BOW = 2;
+    // int ARROW = 3;
+    // int DAGGER = 4;
+    // int TWOSWORD = 5;
+    // int DART = 6;
+    // int SHIRAKEN = 7;
+    // int SPEAR = 8;
+    // int FLAME = 9;
+
+    for (int r = 0; r < 25; r++) {
+      for (int c = 0; c < 80; c++) {
+        int idx = (r * 80) + c;
+        String cc = buffer[idx];
+        String nc = cc;
+
+        if (cc != ')') {
+          continue;
+        }
+
+        int wt = FFIBridge.whatThing(r, c);
+        switch (wt) {
+          case 0: // MACE:
+            nc = '6';
+            break;
+          case 2: // BOW:
+            nc = '4';
+            break;
+          case 7: //SHIRAKEN:
+          case 6: // DART:
+          case 3: //ARROW:
+            nc = '5';
+            break;
+          default: // 1 (sword
+            break;
+        }
+
+        if (nc != cc) {
+          buffer = buffer.substring(0, idx) + nc + buffer.substring(idx + 1);
+        }
+      }
+    }
   }
 
   void modifyCornerTiles() {
@@ -79,8 +127,11 @@ class BoardData extends ChangeNotifier {
 
   void parseBuffer(String buf) {
     SpriteSheet sheet = SpriteSheet.instance();
-
     buffer = buf;
+
+    // r.i.p.
+    String rip = getLine(12);
+    hasRip = rip.contains('PEACE');
 
     // parse the message
     message = getLine(0).trim();
@@ -89,7 +140,7 @@ class BoardData extends ChangeNotifier {
     // parse status > Level: 1  Gold: 0      Hp: 12(12)  Str: 16(16)  Arm: 4   Exp: 1/0
     String status = getLine(23);
     RegExp regExp = RegExp(
-      r"(([a-zA-Z]{0,9}):\s([0-9()/]{0,9}))",
+      r"(([a-zA-Z]{0,9}):\s{0,8}([0-9()/]{0,9}))",
       caseSensitive: false,
       multiLine: false,
     );
@@ -107,7 +158,10 @@ class BoardData extends ChangeNotifier {
     // if dead!
 
     if (buffer.length >= 3200) {
-      modifyCornerTiles();
+      if (!hasRip) {
+        modifyCornerTiles();
+        modifyWeaponTiles();
+      }
 
       // start at 1 - skips the message
       // end before 23 - skips the stats
@@ -131,13 +185,11 @@ class BoardData extends ChangeNotifier {
       }
     }
 
-    notifyListeners();
-  }
-}
+    if (hasRip) {
+      message = '';
+      hasMore = false;
+    }
 
-class Board extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text('board');
+    notifyListeners();
   }
 }

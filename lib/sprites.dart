@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/painting.dart' show decodeImageFromList;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'board.dart';
 
 // Scroll-O-Sprites @ https://imgur.com/a/uHx4k
@@ -37,7 +39,7 @@ class SpritePainter extends CustomPainter {
 
     Size sz = SpriteSheet.instance().size;
     canvas.drawImageRect(img, src & Size(16, 16),
-        Offset(-sz.width/2, -sz.height/2) & sz, paint);
+        Offset(-sz.width / 2, -sz.height / 2) & sz, paint);
 
     canvas.restore();
   }
@@ -55,13 +57,12 @@ class Sprite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BoardData board = Provider.of<BoardData>(context);
+    if (board.hasRip) {
+      return Text(cell?.data ?? '',
+          style: TextStyle(color: cell?.color, fontSize: 20));
+    }
     return CustomPaint(painter: SpritePainter(cell: cell));
-    // return Column(
-    //   children: [
-    //     Text(cell?.data ?? '', style: TextStyle(color: cell?.color)),
-    //     CustomPaint(painter: SpritePainter(cell: cell))
-    //   ],
-    // );
   }
 }
 
@@ -70,7 +71,7 @@ class SpriteSheet {
   Map<String, Color> colorMap = {};
 
   ui.Image? image;
-  Size size = const Size(36, 36);
+  Size size = const Size(32, 32);
 
   static SpriteSheet? theSprites;
   static SpriteSheet instance() {

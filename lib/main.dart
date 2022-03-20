@@ -57,8 +57,15 @@ class GameMap extends StatelessWidget {
     Size size = SpriteSheet.instance().size;
     Offset playerXY =
         Offset(board.player.x * size.width, board.player.y * size.height);
+
+    if (board.hasRip) {
+      size = Size(16, 16);
+      playerXY = Offset(40 * size.width, 20 * size.height);
+    }
+
     Offset center =
         Offset(screen.width / 2 - playerXY.dx, screen.height / 2 - playerXY.dy);
+
     List<Widget> map = [];
     for (final c in board.cells) {
       map.add(Positioned(
@@ -98,11 +105,12 @@ class _GameViewState extends State<GameView> {
     BoardData board = Provider.of<BoardData>(context);
 
     // stats
-    double fontSize = Platform.isAndroid ? 12 : 20;
+    double fontSize = (Platform.isAndroid ? 12 : 20);
     TextStyle statStyle = TextStyle(
-        fontSize: fontSize, fontWeight: FontWeight.bold, color: Colors.white);
-    TextStyle statStyleValue =
-        TextStyle(fontSize: fontSize, color: Colors.white);
+        // fontFamily: 'PixelFont',
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+        color: Colors.white);
     List<Widget> stats = [];
     for (final k in board.stats.keys) {
       String v = board.stats[k] ?? '';
@@ -111,8 +119,12 @@ class _GameViewState extends State<GameView> {
       }
       stats.add(Row(children: [
         Text('$k: ', style: statStyle),
-        Text('$v  ', style: statStyleValue)
+        Text('$v  ', style: statStyle)
       ]));
+    }
+
+    if (board.hasRip) {
+      stats = [];
     }
 
     // commands
@@ -121,20 +133,38 @@ class _GameViewState extends State<GameView> {
       InputTool(icon: Icons.arrow_downward, title: 'Down', cmd: 'j'),
       InputTool(icon: Icons.arrow_upward, title: 'Up', cmd: 'k'),
       InputTool(icon: Icons.arrow_forward, title: 'Right', cmd: 'l'),
+      InputTool(icon: Icons.update, title: 'Rest', cmd: '.'),
+      InputTool(icon: Icons.keyboard_arrow_up, title: 'Space', cmd: '<'),
+      InputTool(icon: Icons.keyboard_arrow_down, title: 'Space', cmd: '>'),
       InputTool(icon: Icons.space_bar, title: 'Space', cmd: ' '),
       InputTool(icon: Icons.cancel_outlined, title: 'Escape', cmd: '\x1b'),
     ];
+
+    if (board.hasRip) {
+      commands = [
+        InputTool(
+            icon: Icons.play_arrow,
+            title: 'Left',
+            cmd: '',
+            onPressed: () {
+              FFIBridge.restartApp();
+              Future.delayed(const Duration(milliseconds: 500), _updateScreen);
+            }),
+      ];
+    }
 
     TextStyle messageStyle = const TextStyle(
         fontSize: 18, fontStyle: FontStyle.italic, color: Colors.white);
 
     return Scaffold(
         body: InputListener(
-          toolbar: commands,
-          showToolbar: true,
+      toolbar: commands,
+      showToolbar: true,
       child: Column(children: [
         // stats
-        Padding(padding: EdgeInsets.only(top: Platform.isAndroid ? 32 : 0), child: Row(children: stats)),
+        Padding(
+            padding: EdgeInsets.only(top: Platform.isAndroid ? 32 : 0),
+            child: Row(children: stats)),
 
         // map
         Expanded(child: GameMap()),
@@ -182,7 +212,9 @@ class _GameViewState extends State<GameView> {
             s = '\n';
             break;
           default:
-            print(key);
+            if (key.length > 1) {
+              print(key);
+            }
             break;
         }
 

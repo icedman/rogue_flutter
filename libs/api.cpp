@@ -19,6 +19,7 @@ void setUpdateConsumers(int c);
 void pushKey(int k);
 int rogue_main(int argc, char **argv);
 int is_rogue_running();
+int what_thing(int y, int x);
 }
 
 pthread_t threadId = 0;
@@ -54,13 +55,25 @@ EXPORT
 void initApp()
 {
     if (threadId != 0) {
-        // pthread_cancel(threadId);
         return;
     }
-
     printf("new game\n");
     setUpdateConsumers(4);
     pthread_create(&threadId, NULL, &run_thread, (void*)"");
+}
+
+EXPORT
+void restartApp()
+{
+    if (threadId != 0) {
+#ifdef __ANDROID__
+            pthread_kill(threadId, SIGUSR1);
+#else
+            pthread_cancel(threadId);
+#endif
+        threadId = 0;
+    }
+    initApp();
 }
 
 EXPORT
@@ -78,4 +91,10 @@ void pushString(char *key)
     }
     printf("%c\n", key[0]);
     pushKey(key[0]);
+}
+
+EXPORT
+int whatThing(int y, int x)
+{
+    return what_thing(y, x);
 }

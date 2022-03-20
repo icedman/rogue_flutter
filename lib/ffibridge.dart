@@ -22,6 +22,10 @@ class FFIBridge {
         nativeApiLib.lookup<NativeFunction<Void Function()>>('initApp');
     initApp = _initApp.asFunction<void Function()>();
 
+    final _restartApp =
+        nativeApiLib.lookup<NativeFunction<Void Function()>>('restartApp');
+    restartApp = _restartApp.asFunction<void Function()>();
+
     final _getSB = nativeApiLib
         .lookup<NativeFunction<Pointer<Utf8> Function()>>('getScreenBuffer');
     _getScreenBuffer = _getSB.asFunction<Pointer<Utf8> Function()>();
@@ -30,6 +34,10 @@ class FFIBridge {
         .lookup<NativeFunction<Void Function(Pointer<Utf8>)>>('pushString');
     _pushKey = _pk.asFunction<void Function(Pointer<Utf8>)>();
 
+    final _whatThing = nativeApiLib
+        .lookup<NativeFunction<Int32 Function(Int32, Int32)>>('whatThing');
+    whatThing = _whatThing.asFunction<int Function(int, int)>();
+
     return true;
   }
 
@@ -37,8 +45,10 @@ class FFIBridge {
   static late Function add;
   static late Function _capitalize;
   static late Function initApp;
+  static late Function restartApp;
   static late Function _getScreenBuffer;
   static late Function _pushKey;
+  static late Function whatThing;
 
   static String capitalize(String str) {
     final _str = str.toNativeUtf8();
